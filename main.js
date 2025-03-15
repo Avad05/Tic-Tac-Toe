@@ -61,14 +61,16 @@ const gameController = (function(){
 
     const startGame = () =>{
         players = [
-            CreatePlayer("playerX", "X"),
-            CreatePlayer("playerO", "O")
+            CreatePlayer("player X", "X"),
+            CreatePlayer("player O", "O")
         ];
         currentPlayerIndex = 0;
         gameOver = false;
         gameBoard.resetBoard();
         scores = {X:0, O:0};
         displayController.updateScore(scores);
+        const confetti = document.getElementById("confetti");
+        if (confetti) confetti.remove();
         
     };
     const playTurn = (position) =>{
@@ -88,6 +90,7 @@ const gameController = (function(){
 
         if (scores[winner] === 3) {
             displayController.setMessage(`${currentPlayer.playerName} is the Grand Winner!`);
+            displayController.triggerCelebration();
             return;
         }
 
@@ -147,7 +150,24 @@ const displayController = ( function (){
                 Player X: ${scores.X} | Player O: ${scores.O}
             `;
         };
-        return {render, setMessage, updateScore};
+
+        const triggerCelebration = () => {
+            // 🎊 Add party popper animation
+            const confettiContainer = document.createElement("div");
+            confettiContainer.id = "confetti";
+            document.body.appendChild(confettiContainer);
+        
+            // 🔊 Play victory sound
+            const victorySound = new Audio("victory.mp3");
+            victorySound.play();
+        
+            // 🎇 Remove confetti after 5 seconds
+            setTimeout(() => {
+                document.getElementById("confetti").remove();
+            }, 5000);
+        };
+        
+        return {render, setMessage, updateScore, triggerCelebration};
 }
 
 )();
