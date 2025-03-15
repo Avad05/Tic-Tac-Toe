@@ -15,7 +15,7 @@ const gameBoard = (function ()
     };
 
     const isValidMove = (position) =>{
-        board[position] === "";
+       return board[position] === "";
     };
 
 
@@ -32,8 +32,8 @@ const gameBoard = (function ()
                  return board[a];
             }
 
-            return null;
         }
+        return null;
     };
 
     const ifFull = () => board.every(cell => cell != "");
@@ -54,38 +54,107 @@ const CreatePlayer = (playerName, marker) =>{
 
 
 const gameController = (function(){
+    let scores = { X:0, O:0};
     let players = [];
     let currentPlayerIndex = 0;
     let gameOver = false;
 
-    const startGame = (player1Name, PlayerName2) =>{
+    const startGame = () =>{
         players = [
-            CreatePlayer(player1Name, "X"),
-            CreatePlayer(player2Name, "O")
+            CreatePlayer("playerX", "X"),
+            CreatePlayer("playerO", "O")
         ];
         currentPlayerIndex = 0;
         gameOver = false;
         gameBoard.resetBoard();
+        
     };
     const playTurn = (position) =>{
         if(gameOver || !gameBoard.isValidMove(position)) return false;
-    
+        if (gameBoard.getBoard()[position] !== "") {
+            return; // Ignore the move if the cell is already occupied
+        }
     const currentPlayer = players[currentPlayerIndex];
     gameBoard.placeMark(position, currentPlayer.marker);
+    displayController.render();
 
     const winner = gameBoard.checkWinner();
     if(winner){
         gameOver = true;
-        return `${currentPlayer.playerName} wins!`;
+        scores[winner]++;
+        displayController.updateScore(scores);
+
+        if (scores[winner] === 3) {
+            displayController.setMessage(`${currentPlayer.playerName} is the Grand Winner!`);
+            return;
+        }
+
+        displayController.setMessage(`${currentPlayer.playerName} wins this round!`);
+        setTimeout(resetGame, 2000);  // ✅ Reset board after 2 seconds
+        return;
+
+        //return `${currentPlayer.playerName} wins!`;
     }else if(gameBoard.ifFull()){
         gameOver = true;
-        return `It is a tie`;
+        displayController.setMessage("Its a tie");
+        setTimeout(resetGame, 2000);
+        return;
     }
 
     currentPlayerIndex = 1 - currentPlayerIndex;
     return `Next turn: ${players[currentPlayerIndex].playerName}`;
    
 };
-return {startGame, playTurn};
+
+const resetGame = () => {
+    gameOver = false;
+    gameBoard.resetBoard();
+    displayController.render();
+    displayController.setMessage(`New round! ${players[currentPlayerIndex].playerName}'s turn.`);
+};
+
+return {startGame, playTurn, resetGame};
 
 })();
+
+const displayController = ( function (){
+    const boardElement = document.getElementById("GameBoard");
+    const messageElement = document.getElementById("message");
+      
+    const render = () =>{
+        boardElement.innerHTML = "";
+        gameBoard.getBoard().forEach((cell, index) =>{
+            const cellElement = document.createElement("div");
+            cellElement.classList.add("cell");
+            cellElement.textContent = cell;
+            if (cell !== "") {
+                cellElement.classList.add("taken"); 
+            }
+            cellElement.addEventListener("click", () =>{
+                gameController.playTurn(index)
+            });
+            boardElement.appendChild(cellElement);
+        });
+        };
+        const setMessage = (message) =>{
+            messageElement.textContent = message;
+        };
+
+        const updateScore = (scores) => {
+            document.getElementById("scoreBoard").innerHTML = `
+                Player X: ${scores.X} | Player O: ${scores.O}
+            `;
+        };
+        return {render, setMessage, updateScore};
+}
+
+)();
+
+
+document.getElementById("startBtn").addEventListener("click", () =>{
+    gameController.startGame();
+    displayController.render();
+    displayController.setMessage("Game Started, X's turn!!!");
+})
+
+

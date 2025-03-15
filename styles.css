@@ -1,3 +1,57 @@
 body{
     background-color: rgb(221, 167, 96);
+    display: flex;
+    padding-left: 50px;
+    flex-direction: column;
+    gap: 40px;
+}
+
+#GameBoard {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(3, 200px);
+    gap: 5px;
+}
+#startBtn{
+    height: 60px;
+    width: 120px;
+    border: 4px solid black;
+    border-radius: 8px;
+    font-size: 15px;
+    
+
+}
+
+.cell {
+    width: 200px;
+    height: 200px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    background-color: bisque;
+    font-size: 100px;
+}
+
+.cell.taken {
+    cursor: not-allowed;
+    background-color: #ffcccc; /* Light red effect */
+}
+
+#scoreBoard{
+    font-size: 50px;
+}
+
+.middle{
+    display: flex;
+    gap: 30px;
+    
+    align-items: center;
+    
+}
+
+#message{
+    font-size: 50px;
 }
