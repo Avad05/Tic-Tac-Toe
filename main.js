@@ -67,6 +67,8 @@ const gameController = (function(){
         currentPlayerIndex = 0;
         gameOver = false;
         gameBoard.resetBoard();
+        scores = {X:0, O:0};
+        displayController.updateScore(scores);
         
     };
     const playTurn = (position) =>{
@@ -141,7 +143,7 @@ const displayController = ( function (){
         };
 
         const updateScore = (scores) => {
-            document.getElementById("scoreBoard").innerHTML = `
+            document.getElementById("scoreBoard").textContent = `
                 Player X: ${scores.X} | Player O: ${scores.O}
             `;
         };
